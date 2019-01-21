@@ -20,17 +20,16 @@ def main():
 
     algo = sys.argv[1]
     voted_data = script_data['voted']
+    predict_data = script_data['predict']
 
     if algo == "bayes":
-        training_set, _ = split_data_set(voted_data)
-        clf = train_bayes(training_set)
-        recom_list = get_recommendations(clf, script_data['predict'])
+        clf = train_bayes(voted_data)
+        recom_list = get_recommendations(clf, predict_data)
 
         save_recommendations_to_file(recom_list)
     elif algo == "neural":
-        training_set, _ = split_data_set(voted_data)
-        nn = train_nn(training_set)
-        recom_list = get_recommendations(nn, script_data['predict'])
+        nn = train_nn(voted_data)
+        recom_list = get_recommendations(nn, predict_data, True)
 
         save_recommendations_to_file(recom_list)
     else:
@@ -51,12 +50,12 @@ def main():
         bayes_avrg = tuple(item_1 / rounds for item_1 in bayes_metrics)
         nn_avrg = tuple(item_1 / rounds for item_1 in nn_metrics)
 
-        print("\nBayes:")
+        print("\nBayes average metrics:")
         print("Precision: " + str(bayes_avrg[0]))
         print("Recall: " + str(bayes_avrg[1]))
         print("F-Measure: " + str(bayes_avrg[2]))
 
-        print("\nNeural Network:")
+        print("\nNeural Network average metrics:")
         print("Precision: " + str(nn_avrg[0]))
         print("Recall: " + str(nn_avrg[1]))
         print("F-Measure: " + str(nn_avrg[2]))
@@ -67,7 +66,9 @@ def train_bayes(training_set):
     training_data = create_training_data(training_set)
 
     clf = NaiveBayesClassifier()
-    clf.train(training_data['movies'], np.ravel(training_data['votes']))
+    votes = np.ravel(training_data['votes'])
+
+    clf.train(training_data['movies'], votes)
 
     return clf
 
@@ -85,29 +86,17 @@ def train_nn(training_set):
     return nn
 
 
-def get_recommendations(algo, movies_to_predict):
+def get_recommendations(algo, movies_to_predict, norm=False):
     recom_list = []
 
     for movie in movies_to_predict:
-        predict_data = movie_to_vector(movie, True)
+        predict_data = movie_to_vector(movie, norm)
         movie_id = movie['movie_id']
         predicted = algo.predict(predict_data)
         recom_list.append({
             "id": movie_id,
             "value": predicted[0]
         })
-
-        # i = 0
-        # for movie in script_data['predict']:
-        #     movie_id = movie['movie_id']
-        #     predicted_list.append({
-        #         "id": movie_id,
-        #         "value": predicted[i]
-        #     })
-        #     print("Predict for '" + movie_id + "': " + str(predicted[i]), flush=True)
-        #     i += 1
-
-        # print("Predict for '" + movie_id + "': " + str(predicted), flush=True)
     return recom_list
 
 

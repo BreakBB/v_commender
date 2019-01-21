@@ -1,9 +1,9 @@
 import numpy as np
 
-genre_count = 43
-director_count = 4205
-actor_count = 13748
-writer_count = 6685
+genre_count = 50
+director_count = 8540
+actor_count = 28057
+writer_count = 14345
 
 
 def movie_to_vector(movie, norm=False):
