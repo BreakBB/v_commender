@@ -5,7 +5,7 @@ from random import shuffle
 def save_recommendations_to_file(predicted_list):
     file_name = "predicted.json"
 
-    print("Saving " + str(len(predicted_list)) + " items to " + file_name, flush=True)
+    # print("Saving " + str(len(predicted_list)) + " items to " + file_name, flush=True)
     with open(file_name, "w") as f:
         f.write(json.dumps(predicted_list))
 
