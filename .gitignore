@@ -4,5 +4,6 @@
 v_crawl/data
 venv/
 **/*.ini
-**/*.json
+data.json
+predicted.json
 *.pyc
